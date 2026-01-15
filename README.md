@@ -60,10 +60,51 @@ public List<UserDTO> getAllUsers() {
 }
 ```
 
-#### 2.3 Asynchrone et Messaging
-- [ ] Traitement asynchrone des PDFs volumineux
-- [ ] Queue pour la synchronisation JSONPlaceholder
+#### 2.3 Asynchrone et Messaging (Kafka)
+- [ ] Configuration Apache Kafka pour le messaging
+- [ ] Traitement asynchrone des PDFs volumineux avec @Async
+- [ ] Queue Kafka pour la synchronisation JSONPlaceholder
 - [ ] WebSockets pour les notifications temps réel
+- [ ] Dead Letter Queue (DLQ) pour la gestion d'erreurs
+- [ ] Monitoring des topics Kafka
+
+```java
+// Configuration Kafka Producer
+@Configuration
+public class KafkaProducerConfig {
+    @Bean
+    public ProducerFactory<String, Object> producerFactory() {
+        Map<String, Object> config = new HashMap<>();
+        config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        return new DefaultKafkaProducerFactory<>(config);
+    }
+}
+
+// Service asynchrone pour PDF
+@Service
+public class AsyncPdfService {
+    @KafkaTemplate
+    private KafkaTemplate<String, Object> kafkaTemplate;
+    
+    @Async
+    @KafkaListener(topics = "pdf-generation-requests")
+    public CompletableFuture<Void> generatePdfAsync(PdfGenerationRequest request) {
+        // Traitement asynchrone des PDFs volumineux
+        return CompletableFuture.completedFuture(null);
+    }
+}
+
+// WebSocket pour notifications
+@Component
+public class NotificationWebSocketHandler extends TextWebSocketHandler {
+    @KafkaListener(topics = "notifications")
+    public void handleNotification(NotificationEvent event) {
+        // Diffuser via WebSocket
+    }
+}
+```
 
 ### 📊 **3. Fonctionnalités Métier**
 
@@ -233,17 +274,106 @@ ENTRYPOINT ["java", "-jar", "/app.jar"]
 3. Tests unitaires essentiels
 4. Validation des données
 
-### Phase 2 (Sprint 3-4) - Performance
+### Phase 2 (Sprint 3-4) - Performance & Messaging
 1. Cache Redis
-2. Pagination
-3. Optimisation requêtes
-4. Monitoring basique
+2. Pagination et optimisation requêtes
+3. **Configuration Apache Kafka**
+4. **Traitement asynchrone des PDFs**
+5. **Queue pour synchronisation JSONPlaceholder**
+6. Monitoring basique
 
-### Phase 3 (Sprint 5-6) - Fonctionnalités
+#### Détails d'implémentation Kafka (Sprint 3-4):
+
+**Sprint 3 - Configuration Kafka & Infrastructure**
+- [ ] Installation et configuration Kafka local/Docker
+- [ ] Configuration Spring Kafka dans `application.properties`
+- [ ] Création des topics Kafka (`pdf-generation-requests`, `json-placeholder-sync`, `notifications`)
+- [ ] Configuration des producers et consumers
+- [ ] Tests de base du messaging
+
+**Sprint 4 - Implémentation des services asynchrones**
+- [ ] Service asynchrone pour génération PDF avec `@Async` et Kafka
+- [ ] Queue Kafka pour synchronisation JSONPlaceholder 
+- [ ] Gestion des erreurs avec Dead Letter Queue
+- [ ] Monitoring des topics et métriques Kafka
+
+```yaml
+# Configuration Docker Compose pour développement
+version: '3.8'
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+  
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+```
+
+```properties
+# application.properties - Configuration Kafka
+spring.kafka.bootstrap-servers=localhost:9092
+spring.kafka.producer.key-serializer=org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
+spring.kafka.consumer.group-id=todo-app
+spring.kafka.consumer.key-deserializer=org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
+```
+
+### Phase 3 (Sprint 5-6) - Fonctionnalités & Notifications
 1. Catégories et priorités
 2. Dates d'échéance
 3. Interface améliorée
-4. Notifications
+4. **WebSockets pour notifications temps réel**
+5. **Dead Letter Queue (DLQ) et monitoring Kafka**
+6. Notifications push et toast messages
+
+#### Détails d'implémentation WebSockets & Notifications (Sprint 5-6):
+
+**Sprint 5 - WebSockets et notifications temps réel**
+- [ ] Configuration WebSocket avec Spring Boot
+- [ ] Intégration WebSocket avec Kafka pour diffusion des notifications
+- [ ] Types de notifications (création, modification, échéance de tâches)
+- [ ] Client Angular pour réception notifications WebSocket
+
+**Sprint 6 - Amélioration et monitoring Kafka**
+- [ ] Implémentation Dead Letter Queue pour messages en erreur
+- [ ] Retry policy et gestion des échecs
+- [ ] Monitoring Kafka avec métriques Spring Actuator
+- [ ] Dashboard monitoring des topics et messages
+
+```java
+// Configuration WebSocket
+@Configuration
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(new NotificationWebSocketHandler(), "/ws/notifications")
+                .setAllowedOrigins("*");
+    }
+}
+
+// Service de notification
+@Service
+public class NotificationService {
+    @KafkaTemplate
+    private KafkaTemplate<String, NotificationEvent> kafkaTemplate;
+    
+    public void sendTodoNotification(Todo todo, NotificationType type) {
+        NotificationEvent event = new NotificationEvent(todo.getId(), type, todo.getUsername());
+        kafkaTemplate.send("notifications", event);
+    }
+}
+```
 
 ### Phase 4 (Sprint 7-8) - Avancé
 1. PWA
