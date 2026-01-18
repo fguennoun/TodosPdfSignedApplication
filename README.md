@@ -181,7 +181,31 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 ---
 
-## 📱 **Prochaine Phase 3 (Sprint 5-6) - Fonctionnalités & UX**
+### 🎉 **Phase 3 (Sprint 5-6) - Authentification, Architecture & Synchronisation** ✅ TERMINÉE
+
+#### 3.1 ✅ Sécurité & Authentification (Frontend)
+- [x] **Correction Interceptor JWT** - Enregistrement via `withInterceptorsFromDi()`
+- [x] **Service Auth Singleton** - Instance unique pour gestion d'état cohérente
+- [x] **Mise à jour Passwords** - Hashs BCrypt corrigés via Flyway `V2`
+
+#### 3.2 ✅ Architecture Frontend (Angular 19)
+- [x] **Restructuration Modulaire** - Séparation `AppComponent` et `TodosComponent` (Standalone)
+- [x] **Routage Avancé** - Protection avec `AuthGuard` et `AdminGuard`
+- [x] **Shell UI** - Mise en place d'un layout moderne et extensible
+
+#### 3.3 ✅ Synchronisation & Backend
+- [x] **Mapping External IDs** - Colonne `external_id` pour éviter les conflits de PK
+- [x] **Optimisation Performance** - Correction Optimistic Locking lors de la sync
+- [x] **Vue Globale Admin** - Visibilité des 200 todos synchronisés pour les administrateurs
+
+#### 3.4 ✅ Expérience Utilisateur (UX)
+- [x] **Pagination Frontend** - Système complet de navigation (Précédent/Suivant, numéros de page)
+- [x] **Dashboard Dynamique** - Statistiques globales en temps réel
+- [x] **Intégration Design** - UI responsive avec pagination professionnelle
+
+---
+
+## 🚧 **Phase 4 (Sprint 7-8) - Fonctionnalités Métier Avancées & UX Moderne**
 
 ### 🎯 Fonctionnalités Métier Avancées
 - [ ] Catégories de tâches avec couleurs
@@ -191,17 +215,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 - [ ] Assignation multi-utilisateurs
 
 ### 🎨 Interface Utilisateur Moderne
-- [ ] Migration Angular 19 avec Material Design
+- [ ] Migration Angular Material Design
 - [ ] Interface responsive mobile-first
 - [ ] Mode sombre/clair
 - [ ] Drag & Drop pour réorganisation
 - [ ] Vue Kanban en plus de la liste
 
 ### 📈 Dashboard et Analytics
-- [ ] Statistiques de productivité
-- [ ] Graphiques de progression
+- [ ] Statistiques de productivité avancées
+- [ ] Graphiques de progression Chart.js
 - [ ] Rapports périodiques automatisés
-- [ ] Métriques d'utilisation temps réel
+- [ ] Notifications push navigateur
+
+### 4.1 📱 Progressive Web App (PWA)
+- [ ] **Service Worker** - Cache offline et sync background
+- [ ] **Manifest Web App** - Installation mobile native-like
+- [ ] **Offline capabilities** - Fonctionnement sans réseau
+- [ ] **Background sync** - Synchronisation automatique en arrière-plan
 
 ---
 
@@ -290,12 +320,12 @@ curl -X POST http://localhost:8080/api/todos/export/pdf \
 
 | Métrique | Objectif | Actuel | Statut |
 |----------|----------|---------|---------|
-| Authentification JWT | Fonctionnel | ✅ Implémenté | ✅ |
+| Authentification JWT | Fonctionnel | ✅ Intercepteurs OK | ✅ |
 | Base PostgreSQL | Migration complète | ✅ Flyway OK | ✅ |
 | Kafka Messaging | 3 topics + consumers | ✅ Opérationnel | ✅ |
 | WebSocket temps réel | Notifications | ✅ STOMP + SockJS | ✅ |
-| Tests unitaires | > 50% coverage | ✅ Services testés | ✅ |
-| PDF asynchrone | Queue Kafka | ✅ Fonctionnel | ✅ |
+| Sync JSONPlaceholder | 200 records | ✅ External ID Map | ✅ |
+| UX & Navigation | Pagination | ✅ Implémenté | ✅ |
 | Redis Cache | Configuration | ✅ Intégré | ✅ |
 
 ---
@@ -334,11 +364,11 @@ docker exec -it kafka kafka-topics.sh --list --bootstrap-server localhost:9092
 ```
 
 **Prochaines étapes recommandées :**
-1. ✅ **Phase 1-2 COMPLÈTÉES** - Fondations solides établies
-2. 🎯 **Phase 3** - Fonctionnalités métier avancées et UX moderne
-3. 🚀 **Phase 4** - PWA, analytics et intégrations externes
+1. ✅ **Phases 1, 2 & 3 COMPLÈTÉES** - Architecture et bases fonctionnelles robustes
+2. 🎯 **Phase 4** - Fonctionnalités métier avancées et UX moderne
+3. 🚀 **Phase 5** - PWA, IA et intégrations externes
 
-L'application dispose maintenant d'une **architecture moderne et scalable** avec messaging asynchrone, notifications temps réel et persistance robuste ! 🚀
+L'application dispose maintenant d'une **architecture moderne et scalable** avec messaging asynchrone, notifications temps réel et synchronisation externe robuste ! 🚀
 
 ## 🎯 **Phase 3 (Sprint 5-6) - En Cours** 🚧
 
@@ -603,15 +633,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 }
 ```
 
-### 🚧 Phase 3 (Sprint 5-6) - Fonctionnalités & UX EN COURS
+### ✅ Phase 3 (Sprint 5-6) - Authentification & Architecture TERMINÉE
+1. ✅ Correction interceptors HttpClient
+2. ✅ Routage sécurisé (Guards)
+3. ✅ Standalone Components refactoring
+4. ✅ Synchronisation avec `external_id`
+5. ✅ Pagination UI et global view admin
+
+### 🚧 Phase 4 (Sprint 7-8) - Fonctionnalités & UX EN COURS
 1. [ ] Catégories et priorités todos
 2. [ ] Dates d'échéance avec notifications automatiques
 3. [ ] Interface Angular Material moderne
-4. [ ] Monitoring Kafka avancé avec dashboard
-5. [ ] Vue Kanban et drag & drop
-6. [ ] Notifications push navigateur
+4. [ ] Vue Kanban et drag & drop
+5. [ ] Notifications push navigateur
 
-### 🎯 Phase 4 (Sprint 7-8) - Avancé PLANIFIÉ
+### 🎯 Phase 5 (Sprint 9-10) - Avancé PLANIFIÉ
 1. [ ] Progressive Web App (PWA)
 2. [ ] Intelligence artificielle (suggestions)
 3. [ ] Intégrations externes (Google Calendar, Slack)
