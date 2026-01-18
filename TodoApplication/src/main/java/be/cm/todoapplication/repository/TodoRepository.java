@@ -23,22 +23,24 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     Page<Todo> findByUserAndCompleted(User user, Boolean completed, Pageable pageable);
 
-    @Query("SELECT t FROM Todo t WHERE t.user = :user AND (:completed IS NULL OR t.completed = :completed)")
+    @Query("SELECT t FROM Todo t WHERE (:user IS NULL OR t.user = :user) AND (:completed IS NULL OR t.completed = :completed)")
     Page<Todo> findByUserWithOptionalCompleted(@Param("user") User user,
                                                @Param("completed") Boolean completed,
                                                Pageable pageable);
 
-    @Query("SELECT t FROM Todo t WHERE t.user = :user AND t.title LIKE %:search%")
+    @Query("SELECT t FROM Todo t WHERE (:user IS NULL OR t.user = :user) AND t.title LIKE %:search%")
     Page<Todo> findByUserAndTitleContaining(@Param("user") User user,
                                            @Param("search") String search,
                                            Pageable pageable);
 
     List<Todo> findByUserAndCompletedOrderByCreatedAtDesc(User user, Boolean completed);
 
-    @Query("SELECT COUNT(t) FROM Todo t WHERE t.user = :user AND (:completed IS NULL OR t.completed = :completed)")
+    @Query("SELECT COUNT(t) FROM Todo t WHERE (:user IS NULL OR t.user = :user) AND (:completed IS NULL OR t.completed = :completed)")
     long countByUserAndCompleted(@Param("user") User user, @Param("completed") Boolean completed);
 
     Optional<Todo> findByIdAndUser(Long id, User user);
+
+    Optional<Todo> findByExternalId(Long externalId);
 
     @Query("SELECT COUNT(t) FROM Todo t WHERE t.user = :user AND t.createdAt >= :since")
     long countByUserAndCreatedAtAfter(@Param("user") User user, @Param("since") LocalDateTime since);

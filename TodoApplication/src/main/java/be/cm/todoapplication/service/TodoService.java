@@ -81,12 +81,15 @@ public class TodoService {
     @Transactional(readOnly = true)
     public Page<TodoDTO> getUserTodos(Pageable pageable, Boolean completed, String search) {
         User currentUser = getCurrentUser();
+        boolean isAdmin = currentUser.getRole() == User.Role.ADMIN;
+        User userFilter = isAdmin ? null : currentUser;
+
         Page<Todo> todos;
 
         if (search != null && !search.trim().isEmpty()) {
-            todos = todoRepository.findByUserAndTitleContaining(currentUser, search.trim(), pageable);
+            todos = todoRepository.findByUserAndTitleContaining(userFilter, search.trim(), pageable);
         } else {
-            todos = todoRepository.findByUserWithOptionalCompleted(currentUser, completed, pageable);
+            todos = todoRepository.findByUserWithOptionalCompleted(userFilter, completed, pageable);
         }
 
         List<TodoDTO> todoDTOs = todos.getContent().stream()
@@ -102,6 +105,9 @@ public class TodoService {
     @Transactional(readOnly = true)
     public Optional<TodoDTO> getTodoById(Long id) {
         User currentUser = getCurrentUser();
+        if (currentUser.getRole() == User.Role.ADMIN) {
+            return todoRepository.findById(id).map(this::convertToDTO);
+        }
         return todoRepository.findByIdAndUser(id, currentUser)
                 .map(this::convertToDTO);
     }
@@ -167,11 +173,13 @@ public class TodoService {
     @Transactional(readOnly = true)
     public Map<String, Object> getUserStats() {
         User currentUser = getCurrentUser();
+        boolean isAdmin = currentUser.getRole() == User.Role.ADMIN;
+        User userFilter = isAdmin ? null : currentUser;
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalTodos", todoRepository.countByUserAndCompleted(currentUser, null));
-        stats.put("completedTodos", todoRepository.countByUserAndCompleted(currentUser, true));
-        stats.put("pendingTodos", todoRepository.countByUserAndCompleted(currentUser, false));
+        stats.put("totalTodos", todoRepository.countByUserAndCompleted(userFilter, null));
+        stats.put("completedTodos", todoRepository.countByUserAndCompleted(userFilter, true));
+        stats.put("pendingTodos", todoRepository.countByUserAndCompleted(userFilter, false));
 
         return stats;
     }

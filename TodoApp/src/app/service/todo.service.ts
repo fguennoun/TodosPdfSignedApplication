@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Todo, User } from '../model/todo.model';
+import { Todo, User, PaginatedResponse } from '../model/todo.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +9,14 @@ import { Todo, User } from '../model/todo.model';
 export class TodoService {
   private apiUrl = 'http://localhost:8080/api/todos';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   syncTodos(): Observable<string> {
     return this.http.post(`${this.apiUrl}/sync`, {}, { responseType: 'text' });
   }
 
-  getAllTodos(): Observable<Todo[]> {
-    return this.http.get<Todo[]>(this.apiUrl);
+  getAllTodos(page: number = 0, size: number = 10): Observable<PaginatedResponse<Todo>> {
+    return this.http.get<PaginatedResponse<Todo>>(`${this.apiUrl}?page=${page}&size=${size}`);
   }
 
   getTodoById(id: number): Observable<Todo> {

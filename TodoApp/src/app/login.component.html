@@ -1,0 +1,76 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Connexion</h1>
+      <p>Accédez à votre compte Todo</p>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="alert alert-error">
+      <span class="alert-icon">⚠️</span>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Formulaire de connexion -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Champ nom d'utilisateur -->
+      <div class="form-group">
+        <label for="username" class="form-label">Nom d'utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="form-input"
+          [class.is-invalid]="submitted && f['username'].errors"
+          placeholder="Entrez votre nom d'utilisateur"
+          autocomplete="username"
+        />
+        <div *ngIf="getFieldError('username')" class="form-error">
+          {{ getFieldError('username') }}
+        </div>
+      </div>
+
+      <!-- Champ mot de passe -->
+      <div class="form-group">
+        <label for="password" class="form-label">Mot de passe</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Entrez votre mot de passe"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            title="Afficher/Masquer le mot de passe"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="getFieldError('password')" class="form-error">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <!-- Bouton de connexion -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading"
+      >
+        <span *ngIf="!loading">Connexion</span>
+        <span *ngIf="loading" class="spinner">⏳ Connexion en cours...</span>
+      </button>
+    </form>
+
+    <!-- Lien vers l'inscription -->
+    <div class="login-footer">
+      <p>Pas encore de compte? <a routerLink="/register" class="link">S'inscrire</a></p>
+    </div>
+  </div>
+</div>

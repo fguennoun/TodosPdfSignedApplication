@@ -1,0 +1,76 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <div class="navbar-brand">
+      <a routerLink="/todos" class="brand-link">
+        <span class="brand-icon">✓</span>
+        <span class="brand-text">TodoApp</span>
+      </a>
+    </div>
+
+    <!-- Menu de navigation -->
+    <div class="navbar-menu">
+      <div *ngIf="isAuthenticated" class="nav-links">
+        <a routerLink="/todos" routerLinkActive="active" class="nav-link">
+          📋 Mes Tâches
+        </a>
+        <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active" class="nav-link">
+          ⚙️ Administration
+        </a>
+      </div>
+    </div>
+
+    <!-- Section utilisateur -->
+    <div class="navbar-user">
+      <div *ngIf="isAuthenticated" class="user-section">
+        <!-- Bouton utilisateur -->
+        <button class="user-button" (click)="toggleUserMenu()">
+          <div class="user-avatar">{{ getUserInitials() }}</div>
+          <span class="user-name">{{ currentUser?.username }}</span>
+          <span class="dropdown-icon">▼</span>
+        </button>
+
+        <!-- Menu déroulant utilisateur -->
+        <div *ngIf="showUserMenu" class="user-menu" (click)="closeUserMenu()">
+          <div class="user-menu-header">
+            <div class="user-avatar-large">{{ getUserInitials() }}</div>
+            <div class="user-info">
+              <div class="user-username">{{ currentUser?.username }}</div>
+              <div class="user-email">{{ currentUser?.email }}</div>
+              <div class="user-role">
+                <span class="role-badge" [class.role-admin]="isAdmin">
+                  {{ currentUser?.role }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="user-menu-divider"></div>
+
+          <div class="user-menu-items">
+            <a href="#" class="user-menu-item">
+              👤 Profil
+            </a>
+            <a href="#" class="user-menu-item">
+              ⚙️ Paramètres
+            </a>
+            <a href="#" class="user-menu-item">
+              🔐 Sécurité
+            </a>
+          </div>
+
+          <div class="user-menu-divider"></div>
+
+          <button (click)="logout()" class="user-menu-item logout-btn">
+            🚪 Déconnexion
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="!isAuthenticated" class="auth-links">
+        <a routerLink="/login" class="btn btn-secondary">Connexion</a>
+        <a routerLink="/register" class="btn btn-primary">S'inscrire</a>
+      </div>
+    </div>
+  </div>
+</nav>

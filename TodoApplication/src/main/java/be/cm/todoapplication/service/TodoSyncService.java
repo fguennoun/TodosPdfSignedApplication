@@ -50,8 +50,8 @@ public class TodoSyncService {
 
                 User user = findOrCreateUser(dto.getUserId(), username);
 
-                // Synchroniser le todo
-                Optional<Todo> existingTodoOptional = todoRepository.findById(dto.getId());
+                // Synchroniser le todo par external_id
+                Optional<Todo> existingTodoOptional = todoRepository.findByExternalId(dto.getId());
                 if (existingTodoOptional.isPresent()) {
                     updateExistingTodo(existingTodoOptional.get(), dto, user);
                 } else {
@@ -125,7 +125,7 @@ public class TodoSyncService {
      */
     private void createNewTodo(TodoDTO dto, User user) {
         Todo newTodo = Todo.builder()
-                .id(dto.getId()) // Garder l'ID de JSONPlaceholder
+                .externalId(dto.getId()) // Mapper l'ID JSONPlaceholder vers externalId
                 .title(dto.getTitle())
                 .completed(dto.getCompleted())
                 .user(user)

@@ -25,6 +25,9 @@ public class Todo {
     @Version
     private Long version;
 
+    @Column(name = "external_id")
+    private Long externalId;
+
     @NotBlank(message = "Le titre est obligatoire")
     @Column(nullable = false)
     private String title;

@@ -1,0 +1,143 @@
+<div class="register-container">
+  <div class="register-card">
+    <div class="register-header">
+      <h1>Inscription</h1>
+      <p>Créez votre compte Todo</p>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="alert alert-error">
+      <span class="alert-icon">⚠️</span>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Message de succès -->
+    <div *ngIf="success" class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <span>{{ success }}</span>
+    </div>
+
+    <!-- Formulaire d'inscription -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- Champ nom d'utilisateur -->
+      <div class="form-group">
+        <label for="username" class="form-label">Nom d'utilisateur</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          class="form-input"
+          [class.is-invalid]="submitted && f['username'].errors"
+          placeholder="Choisissez un nom d'utilisateur"
+          autocomplete="username"
+        />
+        <div *ngIf="getFieldError('username')" class="form-error">
+          {{ getFieldError('username') }}
+        </div>
+      </div>
+
+      <!-- Champ email -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-input"
+          [class.is-invalid]="submitted && f['email'].errors"
+          placeholder="Entrez votre email"
+          autocomplete="email"
+        />
+        <div *ngIf="getFieldError('email')" class="form-error">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
+
+      <!-- Champ mot de passe -->
+      <div class="form-group">
+        <label for="password" class="form-label">Mot de passe</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.is-invalid]="submitted && f['password'].errors"
+            placeholder="Entrez un mot de passe sécurisé"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            title="Afficher/Masquer le mot de passe"
+          >
+            {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="getFieldError('password')" class="form-error">
+          {{ getFieldError('password') }}
+        </div>
+
+        <!-- Indicateur de force du mot de passe -->
+        <div *ngIf="f['password'].value" class="password-strength">
+          <div class="strength-bar">
+            <div
+              class="strength-fill"
+              [style.width.%]="(getPasswordStrength().strength === 'Faible' ? 25 : getPasswordStrength().strength === 'Moyen' ? 50 : getPasswordStrength().strength === 'Bon' ? 75 : 100)"
+              [style.background-color]="getPasswordStrength().color"
+            ></div>
+          </div>
+          <span class="strength-text" [style.color]="getPasswordStrength().color">
+            Force: {{ getPasswordStrength().strength }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Champ confirmation mot de passe -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirmer le mot de passe</label>
+        <div class="password-input-wrapper">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-input"
+            [class.is-invalid]="submitted && (f['confirmPassword'].errors || registerForm.errors?.['passwordMismatch'])"
+            placeholder="Confirmez votre mot de passe"
+            autocomplete="new-password"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            title="Afficher/Masquer le mot de passe"
+          >
+            {{ showConfirmPassword ? '👁️' : '👁️‍🗨️' }}
+          </button>
+        </div>
+        <div *ngIf="getFieldError('confirmPassword')" class="form-error">
+          {{ getFieldError('confirmPassword') }}
+        </div>
+        <div *ngIf="getPasswordMismatchError()" class="form-error">
+          {{ getPasswordMismatchError() }}
+        </div>
+      </div>
+
+      <!-- Bouton d'inscription -->
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading"
+      >
+        <span *ngIf="!loading">S'inscrire</span>
+        <span *ngIf="loading" class="spinner">⏳ Inscription en cours...</span>
+      </button>
+    </form>
+
+    <!-- Lien vers la connexion -->
+    <div class="register-footer">
+      <p>Vous avez déjà un compte? <a routerLink="/login" class="link">Se connecter</a></p>
+    </div>
+  </div>
+</div>
